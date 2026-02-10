@@ -52,3 +52,28 @@ else:
 # the value of h2  228056070146739718221074259857506724331317833209
 # 4 1 1 1 1
 # valid
+#2nd method
+import hashlib
+
+# 1. Setup & Key Gen
+p, q = 23, 11  # Example primes where q divides p-1
+g = 2          # Generator
+x = 7          # Private key
+y = pow(g, x, p) # Public key
+
+# 2. Signing
+msg = "hello"
+h_val = int(hashlib.sha1(msg.encode()).hexdigest(), 16)
+k = 3          # Random per-message secret
+r = pow(g, k, p) % q
+s = (pow(k, -1, q) * (h_val + x * r)) % q
+
+print(f"Signature (r, s): ({r}, {s})")
+
+# 3. Verification
+w = pow(s, -1, q)
+u1 = (h_val * w) % q
+u2 = (r * w) % q
+v = (pow(g, u1, p) * pow(y, u2, p) % p) % q
+
+print("Valid!" if v == r else "Invalid!")
